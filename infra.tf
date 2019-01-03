@@ -5,18 +5,7 @@ locals {
   }
 }
 
-resource "random_id" "random_suffix" {
-  byte_length  = 4
-}
-
-variable "andrewid" {
-  type    = "string"
-  default = "reference"
-}
-
 locals {
-  image     = "${var.andrewid}"
-  suffix    = "${replace(var.andrewid, "reference", "${random_id.random_suffix.hex}")}"
   ami_name = "cmu-advcc-p1"
   ami_owner = "973134072933"
 }
@@ -53,7 +42,7 @@ IAM role attached to the launch configuration. This governs what resources our w
 */
 
 resource "aws_iam_role" "role-for-ec2" {
-  name = "role-for-ec2-${local.suffix}"
+  name = "role-for-ec2"
 
   assume_role_policy = <<EOF
 {
@@ -73,7 +62,7 @@ EOF
 
 // Create an IAM policy to allow web service to access cloudwatch metrics and logs
 resource "aws_iam_policy" "ec2-iam-policy" {
-  name        = "ec2-iam-policy-${local.suffix}"
+  name        = "ec2-iam-policy"
   description = "ec2-iam-policy"
 
   #This policy:
@@ -117,7 +106,7 @@ resource "aws_iam_role_policy_attachment" "ec2-policy-attach" {
 }
 
 resource "aws_iam_instance_profile" "profile-for-ec2" {
-  name = "profile-for-ec2-${local.suffix}"
+  name = "profile-for-ec2"
   role = "${aws_iam_role.role-for-ec2.name}"
 }
 
